@@ -1,0 +1,271 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Main {
+    public static void main(String[] args) {
+        // Тестирование заданий
+        System.out.println("Задание 1: " + sameLetterPattern("ABAB", "CDCD")); // true
+        System.out.println("Задание 2: " + spiderVsFly("H3", "E2")); // H3-H2-H1-A0-E1-E2
+        System.out.println("Задание 3: " + digitsCount(4666)); // 4
+        System.out.println("Задание 4: " + totalPoints(Arrays.asList("cat", "create", "sat"), "caster")); // 2
+        System.out.println("Задание 5: " + sumsUp(new int[]{1, 2, 3, 4, 5})); // [[3, 5]]
+        System.out.println("Задание 6: " + takeDownAverage(new String[]{"95%", "83%", "90%", "87%", "88%", "93%"})); // "54%"
+        System.out.println("Задание 7: " + caesarCipher("encode", "hello world", 3)); // "KHOOR ZRUOG"
+        System.out.println("Задание 8: " + setSetup(5, 3)); // 60
+        System.out.println("Задание 9: " + timeDifference("Los Angeles", "April 1, 2011 23:23", "Canberra")); // "2011-4-2 17:23"
+        System.out.println("Задание 10: " + isNew(3)); // true
+    }
+
+    // Задание 1
+    public static boolean sameLetterPattern(String str1, String str2) {
+        if (str1.length() != str2.length()) {
+            return false;
+        }
+
+        Map<Character, Character> patternMap = new HashMap<>();
+        for (int i = 0; i < str1.length(); i++) {
+            char char1 = str1.charAt(i);
+            char char2 = str2.charAt(i);
+
+            if (patternMap.containsKey(char1)) {
+                if (patternMap.get(char1) != char2) {
+                    return false;
+                }
+            } else {
+                patternMap.put(char1, char2);
+            }
+        }
+
+        return true;
+    }
+
+    // Задание 2
+    public static String spiderVsFly(String spider, String fly) {
+        char spiderRing = spider.charAt(0);
+        int spiderNumber = Character.getNumericValue(spider.charAt(1));
+
+        char flyRing = fly.charAt(0);
+        int flyNumber = Character.getNumericValue(fly.charAt(1));
+
+        StringBuilder path = new StringBuilder();
+        path.append(spider);
+
+        while (spiderRing != flyRing) {
+            if (spiderRing < flyRing) {
+                spiderRing++;
+            } else {
+                spiderRing--;
+            }
+
+            path.append("-").append(spiderRing).append(spiderNumber);
+        }
+
+        while (spiderNumber != flyNumber) {
+            if (spiderNumber < flyNumber) {
+                spiderNumber++;
+            } else {
+                spiderNumber--;
+            }
+
+            path.append("-").append(flyRing).append(spiderNumber);
+        }
+
+        return path.toString();
+    }
+
+    // Задание 3
+    public static int digitsCount(long number) {
+        if (number == 0) {
+            return 1;
+        }
+
+        if (number < 0) {
+            number = -number;
+        }
+
+        return countDigitsRecursive(number);
+    }
+
+    private static int countDigitsRecursive(long number) {
+        if (number < 10) {
+            return 1;
+        }
+
+        return 1 + countDigitsRecursive(number / 10);
+    }
+
+    // Задание 4
+    public static int totalPoints(List<String> guesses, String target) {
+        int totalPoints = 0;
+
+        for (String guess : guesses) {
+            if (isWordValid(guess, target)) {
+                totalPoints += calculatePoints(guess);
+            }
+        }
+
+        return totalPoints;
+    }
+
+    private static boolean isWordValid(String guess, String target) {
+        int[] guessCount = new int[26];
+        int[] targetCount = new int[26];
+	for (char c : guess.toCharArray()) {
+            guessCount[c - 'a']++;
+        }
+
+        for (char c : target.toCharArray()) {
+            targetCount[c - 'a']++;
+        }
+
+        for (int i = 0; i < 26; i++) {
+            if (guessCount[i] > targetCount[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static int calculatePoints(String word) {
+        int length = word.length();
+
+        if (length < 3) {
+            return 0;
+        } else if (length == 3) {
+            return 1;
+        } else {
+            return length;
+        }
+    }
+
+    // Задание 5
+    public static List<List<Integer>> sumsUp(int[] numbers) {
+        List<List<Integer>> pairs = new ArrayList<>();
+
+        for (int i = 0; i < numbers.length; i++) {
+            for (int j = i + 1; j < numbers.length; j++) {
+                if (numbers[i] + numbers[j] == 8) {
+                    pairs.add(Arrays.asList(numbers[i], numbers[j]));
+                }
+            }
+        }
+
+        return pairs;
+    }
+
+    // Задание 6
+    public static String takeDownAverage(String[] scores) {
+        int numScores = scores.length;
+        int totalPercentage = 100 * (numScores + 5);
+
+        for (String score : scores) {
+            int scorePercentage = Integer.parseInt(score.substring(0, score.length() - 1));
+            totalPercentage -= scorePercentage;
+        }
+
+        int averagePercentage = totalPercentage / numScores;
+        return averagePercentage + "%";
+    }
+
+    // Задание 7
+    public static String caesarCipher(String type, String message, int shift) {
+        StringBuilder result = new StringBuilder();
+
+        shift = shift % 26; // Normalize the shift value
+
+        for (char c : message.toCharArray()) {
+            if (Character.isLetter(c)) {
+                char base = Character.isUpperCase(c) ? 'A' : 'a';
+                char shiftedChar = (char) (((int) c - base + shift + 26) % 26 + base);
+                result.append(shiftedChar);
+            } else {
+                result.append(c);
+            }
+        }
+
+        return result.toString();
+    }
+
+    // Задание 8
+    public static int setSetup(int n, int k) {
+        int combinations = 1;
+
+        for (int i = n; i > n - k; i--) {
+            combinations *= i;
+        }
+
+        return combinations;
+    }
+
+    public static void main(String[] args) {
+        // Задача 9
+        String timestamp = "July 21, 1983 23:01";
+        String cityA = "Los Angeles";
+        String cityB = "Canberra";
+        System.out.println(timeDifference(cityA, timestamp, cityB));
+
+        timestamp = "July 31, 1983 23:01";
+        cityA = "London";
+        cityB = "Rome";
+        System.out.println(timeDifference(cityA, timestamp, cityB));
+
+        timestamp = "December 31, 1970 13:40";
+        cityA = "New York";
+        cityB = "Beijing";
+        System.out.println(timeDifference(cityA, timestamp, cityB));
+
+        // Задача 10
+        int number = 3;
+        System.out.println(isNew(number));
+
+        number = 30;
+        System.out.println(isNew(number));
+
+        number = 321;
+        System.out.println(isNew(number));
+
+        number = 123;
+        System.out.println(isNew(number));
+    }
+
+    public static String timeDifference(String cityA, String timestamp, String cityB) {
+        Map<String, Integer> timeOffsets = new HashMap<>();
+        timeOffsets.put("Los Angeles", -8);
+        timeOffsets.put("New York", -5);
+        timeOffsets.put("Caracas", -4);
+        timeOffsets.put("Buenos Aires", -3);
+        timeOffsets.put("London", 0);
+        timeOffsets.put("Rome", 1);
+        timeOffsets.put("Moscow", 3);
+        timeOffsets.put("Tehran", 3);
+        timeOffsets.put("New Delhi", 5);
+        timeOffsets.put("Beijing", 8);
+        timeOffsets.put("Canberra", 10);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM d, yyyy HH:mm", Locale.US);
+        dateFormat.setTimeZone(TimeZone.getTimeZone(cityA));
+        Date dateA;
+        try {
+            dateA = dateFormat.parse(timestamp);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+
+        dateFormat.setTimeZone(TimeZone.getTimeZone(cityB));
+        String formattedDate = dateFormat.format(dateA);
+        return formattedDate.replaceFirst("\\s+", "");
+    }
+
+    public static boolean isNew(int number) {
+        String strNumber = String.valueOf(number);
+        char[] digits = strNumber.toCharArray();
+        Arrays.sort(digits);
+        String sortedNumber = String.valueOf(digits);
+        return strNumber.equals(sortedNumber);
+    }
+}

@@ -1,0 +1,413 @@
+import java.util.*;
+import java.util.regex.*;
+import java.util.stream.*;
+
+public class Main{
+
+    public static void main(String[] args) {
+        // & 1
+        System.out.println(hiddenAnagram("My world evolves in a beautiful space called Tesh.", "sworn love lived"));
+        // * worldevolvesin
+        System.out.println(hiddenAnagram("An old west action hero actor", "Clint Eastwood"));
+        // * noldwestactio
+        System.out.println(hiddenAnagram("Mr. Mojo Rising could be a song title", "Jim Morrison"));
+        // * mrmojorisin
+        System.out.println(hiddenAnagram("Banana? margaritas", "ANAGRAM"));
+        // * anamarg
+        System.out.println(hiddenAnagram("D  e b90it->?$ (c)a r...d,,#~", "bad credit"));
+        // * debitcard
+        System.out.println(hiddenAnagram("Bright is the moon", "Bongo mirth") + "\n");
+        // * notfound
+        // & 2
+        System.out.println(collect("intercontinentalisationalism", 6));
+        // * ["ationa", "interc", "ntalis", "ontine"]
+        System.out.println(collect("strengths", 3));
+        // * ["eng", "str", "ths"]
+        System.out.println(collect("pneumonoultramicroscopicsilicovolcanoconiosis", 15) + "\n");
+        // * ["croscopicsilico", "pneumonoultrami", "volcanoconiosis"]
+        // & 3
+        System.out.println(nicoCipher("myworldevolvesinhers", "tesh"));
+        // * yowmledrovlvsnieesrh
+        System.out.println(nicoCipher("andiloveherso", "tesha"));
+        // * lnidaevheo s or
+        System.out.println(nicoCipher("mubashirhassan", "crazy"));
+        // * bmusarhiahass n
+        System.out.println(nicoCipher("edabitisamazing", "matt"));
+        // * deabtiismaaznig
+        System.out.println(nicoCipher("iloveher", "612345") + "\n");
+        // * lovehir    e
+        // & 4
+        System.out.println(Arrays.toString(twoProduct(new int[] {1, 2, 3, 9, 4, 5, 15}, 45)));
+        // * [9, 5]
+        System.out.println(Arrays.toString(twoProduct(new int[] {1, 2, 3, 9, 4, 15, 3, 5}, 45)));
+        // * [3, 15]
+        System.out.println(Arrays.toString(twoProduct(new int[] {1,  2, -1,  4,  5,  6,  10, 7}, 20)));
+        // * [4, 5]
+        System.out.println(Arrays.toString(twoProduct(new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 10)));
+        // * [2, 5]
+        System.out.println(Arrays.toString(twoProduct(new int[] {100, 12, 4, 1, 2}, 15)) + "\n");
+        // * []
+        // & 5
+        System.out.println(Arrays.toString(isExact(6)));            // * [6, 3]
+        System.out.println(Arrays.toString(isExact(24)));           // * [24, 4]
+        System.out.println(Arrays.toString(isExact(125)));          // * []
+        System.out.println(Arrays.toString(isExact(720)));          // * [720, 6]
+        System.out.println(Arrays.toString(isExact(1024)));         // * []
+        System.out.println(Arrays.toString(isExact(40320)) + "\n"); // * [40320, 8]
+        // & 6
+        System.out.println(fractions("0.(6)"));            // * "2/3"
+        System.out.println(fractions("1.(1)"));            // * "10/9"
+        System.out.println(fractions("3.(142857)"));       // * "22/7"
+        System.out.println(fractions("0.19(2367)"));       // * "5343/27775"
+        System.out.println(fractions("0.1097(3)") + "\n"); // * "823/7500"
+        // & 7
+        System.out.println(pilish_string("33314444")); // *  333 1 4444
+        System.out.println(pilish_string("TOP"));      // *  TOP
+        System.out.println(pilish_string("X"));        // *  XXX
+        System.out.println(pilish_string("") + "\n");  // *  ""
+        // & 8
+        System.out.println(generateNonconsecutive("3 + 5 * (2 - 6)"));           // *  -17
+        System.out.println(generateNonconsecutive("6 - 18 / (-1 + 4)") + "\n");  // *  0
+        // & 9
+        System.out.println(isValid("aabbcd"));                  // *  NO
+        System.out.println(isValid("aabbccddeefghi"));          // *  NO
+        System.out.println(isValid("abcdefghhgfedecba")+ "\n"); // *  YES
+        // & 10
+        System.out.println(findLCS("abcd", "bd"));        // *  "bd"
+        System.out.println(findLCS("aggtab", "gxtxamb")); // *  "gtab"
+    }
+
+    //1.	Создайте функцию, которая принимает две строки.
+    // Первая строка содержит предложение, содержащее буквы второй строки в последовательной
+    // последовательности, но в другом порядке. Скрытая анаграмма должна содержать все буквы,
+    // включая дубликаты, из второй строки в любом порядке и не должна содержать никаких
+    // других букв алфавита.Напишите функцию, чтобы найти анаграмму второй строки,
+// вложенную где-то в первую строку. Вы должны игнорировать регистр символов,
+// любые пробелы и знаки препинания и возвращать анаграмму в виде строчной строки без пробелов
+// или знаков препинания.
+    public static String hiddenAnagram(String a, String b) {
+        // Приведение строки 'a' к нижнему регистру и удаление всех символов, кроме букв
+        a = a.toLowerCase().replaceAll("[^a-z]", "");
+        // Приведение строки 'b' к нижнему регистру и удаление всех символов, кроме букв
+        b = b.toLowerCase().replaceAll("[^a-z]", "");
+
+        // Создание массива setB размером 26 (количество букв в английском алфавите)
+        int[] setB = new int[26];
+        // Заполнение массива setB количеством вхождений каждой буквы из строки 'b'
+        for (char c : b.toCharArray()) {
+            setB[c - 97]++;
+        }
+
+        // Цикл по строке 'a', начиная с индекса 0 и до a.length() - b.length()
+        for (int i = 0; i <= a.length() - b.length(); i++) {
+            // Создание массива setA размером 26 для хранения количества вхождений букв в подстроке 'a'
+            int[] setA = new int[26];
+            // Заполнение массива setA количеством вхождений каждой буквы из подстроки 'a'
+            for (char c : a.substring(i, i + b.length()).toCharArray()) {
+                setA[c - 97]++;
+            }
+
+            // Сравнение массивов setA и setB для проверки, является ли текущая подстрока анаграммой строки 'b'
+            if (Arrays.equals(setA, setB)) {
+                // Если подстрока анаграмма, возвращается эта подстрока
+                return a.substring(i, i + b.length());
+            }
+        }
+        // Если не найдено ни одной анаграммы, возвращается строка "notfound"
+        return "notfound";
+    }
+
+    //2. Напишите функцию, которая возвращает массив строк, заполненных из срезов символов
+// n-длины данного слова (срез за другим, в то время как n-длина применяется к слову).
+    public static List<String> collect(String str, int n) {
+        // Если длина строки 'str' меньше, чем 'n', возвращается пустой список
+        if (str.length() < n) {
+            return new ArrayList<>();
+        } else {
+            // Создание нового списка 'list'
+            List<String> list = new ArrayList<>();
+            // Добавление в список 'list' подстроки длиной 'n' из начала строки 'str'
+            list.add(str.substring(0, n));
+            // Рекурсивный вызов метода 'collect' для оставшейся части строки 'str' с параметром 'n'
+            list.addAll(collect(str.substring(n), n));
+            // Сортировка списка 'list' и преобразование его в отсортированный список с помощью методов 'stream()', 'sorted()' и 'collect()'
+            return list.stream().sorted().collect(Collectors.toList());
+        }
+    }
+
+//3. В шифре Nico кодирование осуществляется путем создания цифрового ключа и присвоения каждой
+// буквенной позиции сообщения с помощью предоставленного ключа.
+//Создайте функцию, которая принимает два аргумента, message и key, и возвращает закодированное сообщение.
+
+    public static String nicoCipher(String message, String key) {
+        // Получение длины ключа
+        int keyLength = key.length();
+        // Вычисление количества дополнительных пробелов, чтобы сообщение имело кратную длину ключа
+        int extraSpaces = (keyLength - (message.length() % keyLength)) % keyLength;
+        // Добавление дополнительных пробелов в конец сообщения
+        message += new String(new char[extraSpaces]).replace("\0", " ");
+
+        // Создание массива 'order' для хранения порядка индексов ключа
+        Integer[] order = new Integer[keyLength];
+        // Заполнение массива 'order' значениями от 0 до keyLength-1
+        for (int i = 0; i < keyLength; i++) {
+            order[i] = i;
+        }
+
+        // Сортировка массива 'order' на основе символов ключа
+        Arrays.sort(order, (a, b) -> Character.compare(key.charAt(a), key.charAt(b)));
+
+        // Создание массива символов 'result' для хранения зашифрованного сообщения
+        char[] result = new char[message.length()];
+        // Заполнение массива 'result' символами из сообщения в соответствии с порядком индексов ключа
+        for (int i = 0; i < message.length(); i++) {
+            int columnIndex = order[i % keyLength]; // Рассчитывается индекс столбца
+            int rowIndex = i / keyLength; // Рассчитывается индекс строки
+            result[i] = message.charAt(rowIndex * keyLength + columnIndex); // Получение символа из сообщения и запись его в соответствующий индекс 'result'
+        }
+
+        // Создание строки из массива символов 'result'
+        return new String(result);
+    }
+
+//4. Создайте метод, который принимает массив arr и число n и возвращает массив из двух
+// целых чисел из arr, произведение которых равно числу n следующего вида:
+//
+//[value_at_lower_index, value_at_higher_index]
+public static int[] twoProduct(int[] arr, int n) {
+    // Создание хэш-множества для хранения элементов массива
+    HashSet<Integer> set = new HashSet<>();
+    // Обход каждого элемента массива
+    for (int m : arr) {
+        // Вычисление целевого значения деления
+        int target = n / m;
+        // Проверка условия: остаток от деления равен 0 и хэш-множество содержит целевое значение
+        if (n % m == 0 && set.contains(target))
+            // Возвращение массива из целевого значения и текущего элемента, которые удовлетворяют условию
+            return new int[] { target, m };
+        // Добавление текущего элемента в хэш-множество
+        set.add(m);
+    }
+    // Возврат пустого массива, если не найдено сочетание соответствующих элементов
+    return new int[] {};
+}
+
+//5.Создайте рекурсивную функцию, которая проверяет, является ли число точной верхней границей
+// факториала n. Если это так, верните массив точной факториальной границы и n, или иначе, пустой массив.
+public static int[] isExact(int f, int m, int n) {
+    // Если f меньше n, рекурсивно вызываем isExact с увеличенными значениями f и m
+    // f умножается на (m + 1), а m увеличивается на 1
+    return (f < n) ? isExact(f * (m + 1), m + 1, n) : new int[] { f, m };
+}
+
+//6
+public static String fractions(String frac) {
+    int startBracket = frac.indexOf('('); // Нахождение индекса символа "(" в строке и сохранение его в переменной startBracket.
+    if (startBracket != -1) { // Если символ "(" найден в строке:
+        String repeating = frac.substring(startBracket + 1, frac.length() - 1); // Создание подстроки, начиная с символа после "(" и до предпоследнего символа строки.
+        frac = frac.substring(0, startBracket) + repeating.repeat(9 - repeating.length()); // Замена части строки от символа "(" до конца строки повторяющимся блоком, чтобы представить повторяющуюся десятичную дробь.
+    }
+    double a = Double.parseDouble(frac); // Преобразование строки в число с плавающей точкой и сохранение значения в переменной a.
+    int div = 2; // Инициализация переменной div значением 2. Так как округление в большую сторону.
+    while (Math.ceil(a * div) - a * div > 0.000001) div++; // Увеличивать значение переменной div, пока разница между округленным значением a * div и a * div больше 0.000001.
+    return (int) Math.ceil(a * div) + "/" + div; // Возвращение строки, представляющей округленное значение a * div в виде дроби.
+}
+
+//7
+public static String pilish_string(String str) {
+    String res = ""; // Создание пустой строки для сохранения результата.
+    String pi = String.valueOf(Math.PI).replace(".", ""); // Получение значения числа Пи и удаление точки, преобразование его в строку.
+    int piIndex = 0, strIndex = 0; // Инициализация переменных piIndex и strIndex со значениями 0.
+
+    while (strIndex < str.length()) { // Пока strIndex меньше длины строки str:
+        int p = pi.charAt(piIndex++) - '0'; // Получение текущей цифры числа Пи и преобразование ее в число типа int.
+        int n = Math.min(p, str.length() - strIndex); // Определение минимального значения между текущей цифрой числа Пи и оставшейся длиной строки str.
+        res += str.substring(strIndex, strIndex + n); // Добавление подстроки из строки str, начиная с текущего strIndex и заканчивая strIndex + n, к строке res.
+        strIndex += n; // Увеличение strIndex на значение n.
+        if (strIndex < str.length()) res += ' '; // Если strIndex меньше длины строки str, добавление пробела к строке res.
+        else
+            while (n++ < p) res += res.charAt(res.length() - 1); // Если strIndex достигла конца строки str, добавление к строке res повторяющегося символа, чтобы иметь длину, соответствующую текущей цифре числа Пи.
+    }
+    return res; // Возврат строки res, представляющей "pilish string".
+}
+
+
+//8
+for (int i = 0; i < str.length();) { // Перебор символов в строке str.
+        Matcher matcher = part.matcher(str).region(i, str.length()); // Создание объекта Matcher с применением шаблона к части строки начиная с i.
+
+        if (!matcher.find()){ // Если не найдено соответствие шаблону:
+            System.out.println("Syntax error"); // Вывод сообщения об ошибке синтаксиса.
+            return null; // Возврат значения null.
+        }
+
+        if (matcher.group(1) == null){ // Если не найден оператор:
+            if (!start){ // Если это не начало выражения:
+                System.out.println("Syntax error"); // Вывод сообщения об ошибке синтаксиса.
+                return null; // Возврат значения null.
+            }
+            currentNode.setRight(new Node(matcher.group(3))); // Установка правого потомка узла currentNode числом из группы 3.
+            start = false; // Установка флага start в значение false.
+            i = matcher.end(); // Установка i в значение, следующее после конца соответствия с шаблоном.
+            if (!(matcher.group(2) == null)){ // Если найдена открывающая скобка:
+                parLevel++; // Увеличение уровня вложенности скобок.
+            }
+            continue; // Продолжение следующей итерации цикла.
+        }
+        Node opNode = new Node(String.valueOf(matcher.group(1).charAt(1))); // Создание узла с оператором из группы 1.
+        Node numNode = new Node(matcher.group(3)); // Создание узла с числом из группы 3.
+        opNode.setRight(numNode); // Установка правого потомка узла opNode числом numNode.
+        if (parLevel > 0){ // Если уровень вложенности скобок больше 0:
+            if (matcher.group(1).charAt(1) == '*' || matcher.group(1).charAt(1) == '/'){ // Если оператор - умножение или деление:
+                opNode.setLeft(currentNode.right); // Установка левого потомка узла opNode левым потомком узла currentNode.
+                currentNode.setRight(opNode); // Установка правого потомка узла currentNode узлом opNode.
+            }
+            else {
+                opNode.setLeft(currentNode.right); // Установка левого потомка узла opNode левым потомком узла currentNode.
+                currentNode.setRight(opNode); // Установка правого потомка узла currentNode узлом opNode.
+                currentNode = opNode; // Переустановка currentNode на узел opNode.
+            }
+        }
+        if (parLevel == 0){ // Если уровень вложенности скобок равен 0:
+            if (matcher.group(1).charAt(1) == '*' || matcher.group(1).charAt(1) == '/'){ // Если оператор - умножение или деление:
+                opNode.setLeft(currentNode.right); // Установка левого потомка узла opNode левым потомком узла currentNode.
+                currentNode.setRight(opNode); // Установка правого потомка узла currentNode узлом opNode.
+            }
+            else {
+                opNode.setLeft(currentNode); // Установка левого потомка узла opNode узлом currentNode.
+                currentNode = opNode; // Переустановка currentNode на узел opNode.
+            }
+        }
+
+        if (!(matcher.group(2) == null)){ // Если найдена открывающая скобка:
+            currentNode = opNode; // Установка currentNode в узел opNode.
+            parLevel++; // Увеличение уровня вложенности скобок.
+        }
+        if (!(matcher.group(4) == null)){ // Если найдена закрывающая скобка:
+            if (!(currentNode.root == null)){ // Если currentNode имеет родительский узел:
+                currentNode = currentNode.root; // Установка currentNode как родительского узла.
+            }
+            parLevel--; // Уменьшение уровня вложенности скобок.
+        }
+        i = matcher.end(); // Установка i в значение, следующее после конца соответствия с шаблоном.
+    }
+try {
+        double res = currentNode.getUltimateRoot().computeNode(); // Вычисление значения выражения, начиная с конечного корня дерева.
+        if (res % 1 == 0){ // Если результат является целым числом:
+            return String.valueOf((int) res); // Возврат значения результат как целое число.
+        }
+        return String.valueOf(res); // Возврат значения результата как числа с плавающей точкой.
+    } catch (Exception e) {
+        System.out.println(e.getMessage()); // Вывод сообщения об ошибке.
+        return null; // Возврат значения null.
+    }
+}
+
+static class Node {
+    String value;
+    Node left;
+    Node root;
+    Node right;
+
+    public void setLeft(Node node) {
+        this.left = node;
+        node.root = this;
+    }
+
+    public void setRight(Node node) {
+        this.right = node;
+        node.root = this;
+    }
+
+    public Node getUltimateRoot() {
+        if (root != null) {
+            return root.getUltimateRoot();
+        }
+        return this;
+    }
+
+    public double computeNode() throws Exception {
+        if ("+-*/".contains(value)) {
+            double num1 = left.computeNode(); // Вычисление значения левого потомка.
+            double num2 = right.computeNode(); // Вычисление значения правого потомка.
+
+            switch (value) { // В зависимости от оператора:
+                case "+":
+                    return num1 + num2; // Вычисление суммы.
+                case "-":
+                    return num1 - num2; // Вычисление разности.
+                case "*":
+                    return num1 * num2; // Вычисление произведения.
+                case "/":
+                    if (num2 == 0) { // Если делитель равен нулю:
+                        throw new ArithmeticException("Division by zero"); // Генерация исключения "Деление на ноль".
+                    }
+                    return num1 / num2; // Вычисление частного.
+                default:
+                    throw new Exception("Syntax error"); // Генерация общего исключения "Ошибка синтаксиса".
+            }
+        }
+        return Double.parseDouble(value); // Преобразование значения value в число с плавающей точкой.
+    }
+
+    Node(String value) {
+        this.value = value;
+        this.root = null;
+        right = null;
+        left = null;
+    }
+}
+
+//9
+public static String isValid(String str) {
+    int[] charCounts = new int[26]; // Создание массива для подсчета количества каждой буквы в строке.
+    for (char c : str.toCharArray()) { // Перебор символов в строке str.
+        charCounts[c - 'a']++; // Увеличение счетчика для соответствующей буквы.
+    }
+    int prevCount = -1; // Предыдущее количество букв.
+    int removals = 0; // Количество удалений.
+    for (int count : charCounts) { // Перебор количества букв.
+        if (count > 0) { // Если количество больше 0:
+            if (prevCount == -1) { // Если предыдущее количество равно -1:
+                prevCount = count; // Запись текущего количества в prevCount.
+            } else if (prevCount != count) { // Если предыдущее количество не равно текущему:
+                removals += Math.abs(prevCount - count); // Увеличение количества удалений на разницу между предыдущим и текущим количеством.
+                if (removals > 1) return "NO"; // Если количество удалений превышает 1, возврат значения "NO".
+            }
+        }
+    }
+    return "YES"; // Возврат значения "YES".
+}
+
+//10
+public static String findLCS(String s1, String s2) {
+    int[][] dp = new int[s1.length() + 1][s2.length() + 1]; // Создаем двумерный массив dp для хранения длин наибольшей общей подпоследовательности (LCS).
+    StringBuilder lcs = new StringBuilder(); // Создаем объект StringBuilder для сохранения LCS.
+
+    for (int i = 1; i <= s1.length(); i++) { // Цикл перебора символов первой строки s1.
+        for (int j = 1; j <= s2.length(); j++) { // Цикл перебора символов второй строки s2.
+            if (s1.charAt(i - 1) == s2.charAt(j - 1)) { // Если текущие символы равны:
+                dp[i][j] = dp[i - 1][j - 1] + 1; // Записываем в dp[i][j] длину LCS для подстрок s1[0...i-1] и s2[0...j-1].
+            } else { // Иначе:
+                dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]); // Записываем в dp[i][j] максимальную длину LCS для подстрок s1[0...i-1] и s2[0...j-1] с одним из символов исключенным.
+            }
+        }
+    }
+
+    int i = s1.length(), j = s2.length(); // Инициализируем индексы i и j для обратного прохода по dp.
+
+    while (i > 0 && j > 0) { // Пока не достигнуты начала обеих строк:
+        if (s1.charAt(i - 1) == s2.charAt(j - 1)) { // Если текущие символы равны:
+            lcs.append(s1.charAt(i - 1)); // Добавляем символ в StringBuilder lcs.
+            i--; // Уменьшаем индекс i.
+            j--; // Уменьшаем индекс j.
+        } else if (dp[i - 1][j] > dp[i][j - 1]) { // Если значение dp[i-1][j] больше значения dp[i][j-1]:
+            i--; // Уменьшаем индекс i.
+        } else { // Иначе:
+            j--; // Уменьшаем индекс j.
+        }
+    }
+
+    return lcs.reverse().toString(); // Возвращаем реверсированную строку LCS из объекта StringBuilder lcs в виде строки.
+}
+}

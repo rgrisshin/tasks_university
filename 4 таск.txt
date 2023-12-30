@@ -1,0 +1,304 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Main {
+
+    public static void main(String[] args) {
+        // Тестирование решений
+        System.out.println("Результат 1: " + nonRepeatable("abracadabra"));
+        System.out.println("Результат 2: " + generateBrackets(3));
+        System.out.println("Результат 3: " + binarySystem(4));
+        System.out.println("Результат 4: " + alphabeticRow("abcdjuwx"));
+        System.out.println("Результат 5: " + countConsecutiveChars("aaabbcdd"));
+        System.out.println("Результат 6: " + convertToNum("eight"));
+        System.out.println("Результат 7: " + uniqueSubstring("123412324"));
+        
+        int[][] matrix = {
+            {1, 3, 1},
+            {1, 5, 1},
+            {4, 2, 1}
+        };
+        System.out.println("Результат 8: " + shortestWay(matrix));
+        
+        System.out.println("Результат 9: " + numericOrder("t3o the5m 1One all6 r4ule ri2ng"));
+        System.out.println("Результат 10: " + switchNums(519, 723));
+    }
+
+    // Задача 1: удаление повторяющихся символов в строке
+    public static String nonRepeatable(String str) {
+        if (str.length() <= 1) {
+            return str;
+        }
+        if (str.substring(1).contains(str.substring(0, 1))) {
+            return nonRepeatable(str.substring(1));
+        } else {
+            return str.substring(0, 1) + nonRepeatable(str.substring(1));
+        }
+    }
+
+    // Задача 2: генерация всех возможных правильных комбинаций пар скобок
+    public static List<String> generateBrackets(int n) {
+        List<String> result = new ArrayList<>();
+        generateBracketsHelper(n, n, "", result);
+        return result;
+    }
+
+    private static void generateBracketsHelper(int open, int close, String current, List<String> result) {
+        if (open == 0 && close == 0) {
+            result.add(current);
+            return;
+        }
+
+        if (open > 0) {
+            generateBracketsHelper(open - 1, close, current + "(", result);
+        }
+        if (close > open) {
+            generateBracketsHelper(open, close - 1, current + ")", result);
+        }
+    }
+
+    // Задача 3: генерация всех возможных бинарных комбинаций без соседствующих нулей
+    public static List<String> binarySystem(int n) {
+        List<String> result = new ArrayList<>();
+        binarySystemHelper(n, "", result);
+        return result;
+    }
+
+    private static void binarySystemHelper(int n, String current, List<String> result) {
+        if (current.length() == n) {
+            result.add(current);
+            return;
+        }
+
+        if (current.contains("10")) {
+            binarySystemHelper(n, current + "1", result);
+        } else {
+            binarySystemHelper(n, current + "1", result);
+            binarySystemHelper(n, current + "0", result);
+        }
+    }
+
+    // Задача 4: поиск самого длинного последовательного ряда в строке
+    public static String alphabeticRow(String str) {
+        String longestRow = "";
+        String currentRow = "";
+        char prevChar = '\0';
+
+        for (char c : str.toCharArray()) {
+            if (prevChar == '\0' || c - prevChar == 1 || prevChar - c == 1) {
+                currentRow += c;
+            } else {
+                if (currentRow.length() > longestRow.length()) {
+                    longestRow = currentRow;
+                }
+                currentRow = Character.toString(c);
+            }
+            prevChar = c;
+        }
+
+        if (currentRow.length() > longestRow.length()) {
+            longestRow = currentRow;
+        }
+
+        return longestRow;
+    }
+    
+    // Задача 5: подсчет количества идущих подряд символов
+    public static String countConsecutiveChars(String str) {
+        StringBuilder result = new StringBuilder();
+        int count = 1;
+        
+        for (int i = 1; i < str.length(); i++) {
+            if (str.charAt(i) == str.charAt(i - 1)) {
+                count++;
+            } else {
+                result.append(str.charAt(i - 1)).append(count);
+                count = 1;
+            }
+        }
+        
+        result.append(str.charAt(str.length() - 1)).append(count);
+        
+        char[] chars = result.toString().toCharArray();
+        Arrays.sort(chars);
+        
+        return new String(chars);
+    }
+    
+    // Задача 6: преобразование строки с числовыми словами в целое число
+    public static int convertToNum(String str) {
+        Map<String, Integer> wordToNumber = new HashMap<>();
+        wordToNumber.put("one", 1);
+        wordToNumber.put("two", 2);
+        wordToNumber.put("three", 3);
+        wordToNumber.put("four", 4);
+        wordToNumber.put("five", 5);
+        wordToNumber.put("six", 6);
+        wordToNumber.put("seven", 7);
+        wordToNumber.put("eight", 8);
+        wordToNumber.put("nine", 9);
+        wordToNumber.put("ten", 10);
+        wordToNumber.put("eleven", 11);
+        wordToNumber.put("twelve", 12);
+        wordToNumber.put("thirteen", 13);
+        wordToNumber.put("fourteen", 14);
+        wordToNumber.put("fifteen", 15);
+        wordToNumber.put("sixteen", 16);
+        wordToNumber.put("seventeen", 17);
+        wordToNumber.put("eighteen", 18);
+        wordToNumber.put("nineteen", 19);
+        wordToNumber.put("twenty", 20);
+        wordToNumber.put("thirty", 30);
+        wordToNumber.put("forty", 40);
+        wordToNumber.put("fifty", 50);
+        wordToNumber.put("sixty", 60);
+        wordToNumber.put("seventy", 70);
+        wordToNumber.put("eighty", 80);
+        wordToNumber.put("ninety", 90);
+        wordToNumber.put("hundred", 100);
+        wordToNumber.put("thousand", 1000);
+        
+        String[] words = str.split(" ");
+        int result = 0;
+        int currentNumber = 0;
+        
+        for (String word : words) {
+            Integer number = wordToNumber.get(word);
+            if (number != null) {
+                if (number >= 100) {
+                    result += currentNumber * number;
+                    currentNumber = 0;
+                } else if (number >= 10) {
+                    currentNumber *= number;
+                } else {
+                    currentNumber += number;
+                }
+            }
+        }
+        
+        return result + currentNumber;
+    }
+    
+    // Задача 7: поиск подстроки с максимальной длиной уникальных элементов
+    public static String uniqueSubstring(String str) {
+        String result = "";
+        String currentSubstring = "";
+        
+        for (char c : str.toCharArray()) {
+            if (currentSubstring.contains(Character.toString(c))) {
+                if (currentSubstring.length() > result.length()) {
+                    result = currentSubstring;
+                }
+                currentSubstring = currentSubstring.substring(currentSubstring.indexOf(c) + 1);
+            }
+            currentSubstring += c;
+        }
+        
+        if (currentSubstring.length() > result.length()) {
+            result = currentSubstring;
+        }
+        
+        return result;
+    }
+
+    // Задача 8: наименьший матричный путь
+    public static int shortestWay(int[][] matrix) {
+        int n = matrix.length;
+        int[][] dp = new int[n][n];
+        
+        dp[0][0] = matrix[0][0];
+        
+        for (int i = 1; i < n; i++) {
+            dp[i][0] = dp[i - 1][0] + matrix[i][0];
+            dp[0][i] = dp[0][i - 1] + matrix[0][i];
+        }
+        
+        for (int i = 1; i < n; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1]) + matrix[i][j];
+            }
+        }
+        
+        return dp[n - 1][n - 1];
+    }
+    
+    // Задача 9: перестройка строки с числами в правильном порядке
+    public static String numericOrder(String str) {
+        String[] words = str.split(" ");
+        Map<Integer, String> wordMap = new HashMap<>();
+        
+        for (String word : words) {
+            int index = 0;
+            for (int i = 0; i < word.length(); i++) {
+                if (Character.isDigit(word.charAt(i))) {
+                    index = i;
+                    break;
+                }
+            }
+            int num = Integer.parseInt(word.substring(index));
+            wordMap.put(num, word);
+        }
+        
+        StringBuilder result = new StringBuilder();
+        for (int i = 1; i <= wordMap.size(); i++) {
+            result.append(wordMap.get(i)).append(" ");
+        }
+        
+        return result.toString().trim();
+    }
+    
+    // Задача 10: замена элементов второго числа с элементами первого числа
+    public static int switchNums(int num1, int num2) {
+        String str1 = Integer.toString(num1);
+        String str2 = Integer.toString(num2);
+        
+        int[] count1 = new int[10];
+        int[] count2 = new int[10];
+        
+        for (char c : str1.toCharArray()) {
+            count1[c - '0']++;
+        }
+        
+        for (char c : str2.toCharArray()) {
+            count2[c - '0']++;
+        }
+        
+        int result = 0;
+        boolean found = false;
+        
+        for (int i = 9; i >= 0; i--) {
+            while (count2[i] > 0) {
+                if (count1[i] > 0) {
+                    result = result * 10 + i;
+                    count1[i]--;
+                    count2[i]--;
+                    found = true;
+                } else {
+                    for (int j = i - 1; j >= 0; j--) {
+                        if (count1[j] > 0) {
+                            result = result * 10 + j;
+                            count1[j]--;
+                            count2[i]--;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        for (int j = i; j >= 0; j--) {
+                            while (count1[j] > 0) {
+                                result = result * 10 + j;
+                                count1[j]--;
+                                count2[i]--;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return result;
+    }
+}

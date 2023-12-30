@@ -1,0 +1,163 @@
+import java.util.Arrays;
+import java.util.HashSet;
+
+public class Main {
+
+    public static void main(String[] args) {
+        // 1. Повторяющиеся символы
+        System.out.println(duplicateChars("Donald")); // true
+        System.out.println(duplicateChars("orange")); // false
+
+        // 2. Инициалы
+        System.out.println(getInitials("Ryan Gosling")); // RG
+        System.out.println(getInitials("Barack Obama")); // BA
+
+        // 3. Разница суммы четных и нечетных
+        System.out.println(differenceEvenOdd(new int[]{44, 32, 86, 19})); // 143
+        System.out.println(differenceEvenOdd(new int[]{22, 50, 16, 63, 31, 55})); // 61
+
+        // 4. Проверка на совпадение среднего арифметического
+        System.out.println(equalToAvg(new int[]{1, 2, 3, 4, 5})); // true
+        System.out.println(equalToAvg(new int[]{1, 2, 3, 4, 6})); // false
+
+        // 5. Умножение на индекс
+        System.out.println(Arrays.toString(indexMult(new int[]{1, 2, 3}))); // [0, 2, 6]
+        System.out.println(Arrays.toString(indexMult(new int[]{3, 3, -2, 408, 3, 31}))); // [0, 3, -4, 1224, 12, 155]
+
+        // 6. Переворачивание строки
+        System.out.println(reverse("Hello World")); // dlroW olleH
+        System.out.println(reverse("The quick brown fox.")); // .xof nworb kciuq ehT
+
+        // 7. Числа Трибоначчи
+        System.out.println(tribonacci(7)); // 7
+        System.out.println(tribonacci(11)); // 81
+
+        // 8. Генерация псевдо-хэша
+        System.out.println(pseudoHash(5)); // 04bf2
+        System.out.println(pseudoHash(10)); // 2d9c45e1f3
+        System.out.println(pseudoHash(0)); // ""
+
+        // 9. Поиск слова "help"
+        System.out.println(botHelper("Hello, I’m under the water, please help me")); // Calling for a staff member
+        System.out.println(botHelper("Two pepperoni pizzas please")); // Keep waiting
+
+        // 10. Проверка на анаграмму
+        System.out.println(isAnagram("listen", "silent")); // true
+        System.out.println(isAnagram("eleven plus two", "twelve plus one")); // true
+        System.out.println(isAnagram("hello", "world")); // false
+    }
+
+    // 1. Повторяющиеся символы
+    public static boolean duplicateChars(String str) {
+        HashSet<Character> set = new HashSet<>();
+        for (char ch : str.toCharArray()) {
+            if (set.contains(ch)) {
+                return true;
+            }
+            set.add(ch);
+        }
+        return false;
+    }
+
+    // 2. Инициалы
+    public static String getInitials(String fullName) {
+        StringBuilder initials = new StringBuilder();
+        String[] names = fullName.split(" ");
+        for (String name : names) {
+            initials.append(name.charAt(0));
+        }
+        return initials.toString();
+    }
+
+    // 3. Разница суммы четных и нечетных
+    public static int differenceEvenOdd(int[] nums) {
+        int evenSum = 0;
+        int oddSum = 0;
+        for (int num : nums) {
+            if (num % 2 == 0) {
+                evenSum += num;
+            } else {
+                oddSum += num;
+            }
+        }
+        return evenSum - oddSum;
+    }
+
+    // 4. Проверка на совпадение среднего арифметического
+    public static boolean equalToAvg(int[] nums) {
+        int sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+        double avg = (double) sum / nums.length;
+        for (int num : nums) {
+            if (num == avg) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 5. Умножение на индекс
+    public static int[] indexMult(int[] nums) {
+        int[] result = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            result[i] = nums[i] * i;
+        }
+        return result;
+    }
+
+    // 6. Переворачивание строки
+    public static String reverse(String str) {
+        StringBuilder reversed = new StringBuilder(str);
+        return reversed.reverse().toString();
+    }
+
+    // 7. Числа Трибоначчи
+    public static int tribonacci(int n) {
+        if (n == 0) {
+            return 0;
+        }
+        if (n <= 2) {
+            return 1;
+        }
+        int[] tribonacci = new int[n + 1];
+        tribonacci[1] = tribonacci[2] = 1;
+        for (int i = 3; i <= n; i++) {
+            tribonacci[i] = tribonacci[i - 3] + tribonacci[i - 2] + tribonacci[i - 1];
+        }
+        return tribonacci[n];
+    }
+
+    // 8. Генерация псевдо-хэша
+    public static String pseudoHash(int length) {
+        StringBuilder pseudoHash = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            int random = (int) (Math.random() * 16);
+            pseudoHash.append(Integer.toHexString(random));
+        }
+        return pseudoHash.toString();
+    }
+
+    // 9. Поиск слова "help"
+    public static String botHelper(String transcript) {
+        String[] words = transcript.split(" ");
+        for (String word : words) {
+            if (word.equalsIgnoreCase("help")) {
+                return "Calling for a staff member";
+            }
+        }
+        return "Keep waiting";
+    }
+
+    // 10. Проверка на анаграмму
+    public static boolean isAnagram(String str1, String str2) {
+        str1 = str1.replaceAll("\\s", "").toLowerCase();
+        str2 = str2.replaceAll("\\s", "").toLowerCase();
+        char[] charArray1 = str1.toCharArray();
+        char[] charArray2 = str2.toCharArray();
+        Arrays.sort(charArray1);
+        Arrays.sort(charArray2);
+        return Arrays.equals(charArray1, charArray2);
+    }
+}
